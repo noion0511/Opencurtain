@@ -6,11 +6,6 @@ from django.conf import settings
 from django.db import models
 
 class User(models.Model):
-   #def setup(self):
-   #   self.user = get_user_model().objects.create_user(
-   #      username="username",
-   #      email="email"
-   #      password="password",
    username = models.CharField(max_length=100)
    email = models.EmailField()
    pw = models.CharField(max_length=100)
