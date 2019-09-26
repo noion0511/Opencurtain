@@ -11,9 +11,9 @@ class User(models.Model):
    #      username="username",
    #      email="email"
    #      password="password",
-   username_text = models.CharField(max_length=100)
-   email_text = models.EmailField()
-   pw_text = models.CharField(max_length=100)
+   username = models.CharField(max_length=100)
+   email = models.EmailField()
+   pw = models.CharField(max_length=100)
    university = models.ForeignKey(Univercity, on_delete=models.CASCADE)
    faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
    department = models.ForeignKey(Department, on_delete=models.CASCADE)
@@ -25,22 +25,22 @@ class Subscribe(models.Model):
 
 
 class Board(models.Model):
-   boardname_text = models.CharField(max_lengh=100)
+   boardname = models.CharField(max_lengh=100)
 
 
 class University(models.Model):
-   universityname_text = models.CharField(max_lengh=100)
+   universityname = models.CharField(max_lengh=100)
    board = models.ForeignKey(Board, on_delete=models.CASCADE)
 
 
 class Faculty(models.Model):
-   facultyname_text = models.CharField(max_lengh=100)
+   facultyname = models.CharField(max_lengh=100)
    university = models.ForeignKey(University, on_delete=models.CASCADE)
    board = models.ForeignKey(Board, on_delete=models.CASCADE)
 
 
 class Department(models.Model):
-   departmentname_text = models.CharField(max_lengh=100)
+   departmentname = models.CharField(max_lengh=100)
    faulty = models.ForeignKey(Faulty, on_delete=models.CASCADE)
    university = models.ForeignKey(University, on_delete=models.CASCADE)
    board = models.ForeignKey(Board, on_delete=models.CASCADE)
@@ -49,20 +49,14 @@ class Department(models.Model):
 class Posts(models.Model):
    user = models.ForeignKey(User, on_delete=models.CASCADE)
    timestemp = models.DateTimeField(auto_now_add=True)
-   #def was_published_recently(self):
-   #      now = timezone.now()
-   #   return now - datetime.timedelta(days=1) <= self.timestemp <= now
-   title_text = models.CharField(max_length=100)
+   title = models.CharField(max_length=100)
    content = models.CharField(max_length=3000)
    
 
 class Comment(models.Model):
    user = models.ForeignKey(User, on_delete=models.CASCADE)
    timestemp = models.DateTimeField(auto_now_add=True)
-      #def was_published_recently(self):
-      #   now = timezone.now()
-      #return now - datetime.timedelta(days=1) <= self.timestemp <= now
    posts = models.ForeignKey(Posts, on_delete=models.CASCADE)
-   comment_text = models.CharField(max_lengh=1000)
+   comment = models.CharField(max_lengh=1000)
 
 
