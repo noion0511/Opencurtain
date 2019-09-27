@@ -5,7 +5,7 @@ from rest_framework import serializers
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
-        fields = ['id','username', 'email', 'university']
+        fields = ['id','username', 'email', 'university', 'faculty', 'department']
 
 
 class SubscribeSerializer(serializers.HyperlinkedModelSerializer):
@@ -19,10 +19,10 @@ class BoardSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['id','boardname']
 
 
-class  UniversitySerializer(serializers.HyperlinkedModelSerializer):
+class UniversitySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = University
-        fields = ['id','university','board']
+        fields = ['id','universityname','board']
 
 
 class FacultySerializer(serializers.HyperlinkedModelSerializer):

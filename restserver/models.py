@@ -5,39 +5,40 @@ import datetime
 #from django.conf import settings
 from django.db import models
 
-class User(models.Model):
-   username = models.CharField(max_length=100)
-   email = models.EmailField()
-   pw = models.CharField(max_length=100)
-   university = models.ForeignKey(University, on_delete=models.CASCADE)
-   faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
-   department = models.ForeignKey(Department, on_delete=models.CASCADE)
-
 
 class Board(models.Model):
    boardname = models.TextField()
 
 
-class Subscribe(models.Model):
-   user = models.ForeignKey(User, on_delete=models.CASCADE)
-   board = models.ForeignKey(Board, on_delete=models.CASCADE)
-
-
 class University(models.Model):
-   universityname = models.TextField()
+   universityname = models.CharField(max_length=100)
    board = models.ForeignKey(Board, on_delete=models.CASCADE)
 
 
 class Faculty(models.Model):
-   facultyname = models.TextField()
+   facultyname = models.CharField(max_length=100)
    university = models.ForeignKey(University, on_delete=models.CASCADE)
    board = models.ForeignKey(Board, on_delete=models.CASCADE)
 
 
 class Department(models.Model):
-   departmentname = models.TextField()
+   departmentname = models.CharField(max_length=100)
    faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
    university = models.ForeignKey(University, on_delete=models.CASCADE)
+   board = models.ForeignKey(Board, on_delete=models.CASCADE)
+
+
+class User(models.Model):
+   username = models.CharField(max_length=100)
+   email = models.EmailField()
+   pw = models.CharField(max_length=100, blank=True)
+   university = models.ForeignKey(University, on_delete=models.CASCADE)
+   faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
+   department = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+
+class Subscribe(models.Model):
+   user = models.ForeignKey(User, on_delete=models.CASCADE)
    board = models.ForeignKey(Board, on_delete=models.CASCADE)
 
 

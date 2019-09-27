@@ -20,14 +20,14 @@ from restserver.views import *
 
 router = routers.DefaultRouter()
 
-router.register(r'users', views.UserViewSet)
-router.register(r'subscribes', views.SubscribeViewSet)
-router.register(r'boards', views.BoardViewSet)
-router.register(r'universitys', views.UniversityViewSet)
-router.register(r'facultys', views.FacultyViewSet)
-router.register(r'departments', views.DepartmentsViewSet)
-router.register(r'posts', views.PostsViewSet)
-router.register(r'comments',views.CommentViewSet)
+router.register(r'users', UserViewSet)
+router.register(r'subscribes', SubscribeViewSet)
+router.register(r'boards', BoardViewSet)
+router.register(r'universitys', UniversityViewSet)
+router.register(r'facultys', FacultyViewSet)
+router.register(r'departments', DepartmentViewSet)
+router.register(r'posts', PostsViewSet)
+router.register(r'comments', CommentViewSet)
 
 
 urlpatterns = [
