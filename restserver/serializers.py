@@ -1,49 +1,49 @@
-from django.contrib.auth.models import User, Group
+from .models import *
 from rest_framework import serializers
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'email', 'university.universityname']
+        fields = ['id','username', 'email', 'university']
 
 
-class SubscribeSerializer(serializer.HyperlinkedModelSerializer):
-    class meta:
+class SubscribeSerializer(serializers.HyperlinkedModelSerializer):
+     class Meta:
         model = Subscribe
-        fields = ['board']
+        fields = ['id','board']
 
-class BoardSerializer(serializer.HyperlinkedModelSerializer):
-    class meta:
+class BoardSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
         model = Board
-        fields = ['boardname']
+        fields = ['id','boardname']
 
 
-class  UniversitySerializer(serializer.HyperlinkedModelSerializer):
-    class meta:
+class  UniversitySerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
         model = University
-        fields = ['university.universityname','board.boardname']
+        fields = ['id','university','board']
 
 
-class FacultySerializer(serializer.HyperlinkedModelSerializer):
-    class meta:
+class FacultySerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
         model = Faculty
-        fields = ['facultyname', 'university.universityname','board.boardname']
+        fields = ['id','facultyname', 'university','board']
 
 
-class DepartmentSerializer(serializer.HyperlinkedModelSerializer):
-    class meta:
+class DepartmentSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
         model = Department
-        fields = ['departmentname','faulty','university.universityname','board.boardname']
+        fields = ['id','departmentname','faculty','university','board']
 
 
-class PostsSerializer(serializer.HyperlinkedModelSerializer):
-    class meta:
+class PostsSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
         model = Posts
-        fields = ['user.username','timestemp','title','content']
+        fields = ['id','user','timestemp','title','content']
 
 
-class CommentSerializer(serializer.HyperlinkedModelSerializer):
-    class meta:
+class CommentSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
         model = Comment
-        fields = ['user.usename','timestemp','posts','comment']
+        fields = ['user','timestemp','posts','comment']

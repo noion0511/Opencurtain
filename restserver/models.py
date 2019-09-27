@@ -1,17 +1,21 @@
 import datetime
-from django.db import models
+#from django.db import models
 #사용자, 구독, 게시판, 학교, 학부, 학과, 게시물, 댓글
 
-from django.conf import settings
+#from django.conf import settings
 from django.db import models
 
 class User(models.Model):
    username = models.CharField(max_length=100)
    email = models.EmailField()
    pw = models.CharField(max_length=100)
-   university = models.ForeignKey(Univercity, on_delete=models.CASCADE)
+   university = models.ForeignKey(University, on_delete=models.CASCADE)
    faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
    department = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+
+class Board(models.Model):
+   boardname = models.TextField()
 
 
 class Subscribe(models.Model):
@@ -19,24 +23,20 @@ class Subscribe(models.Model):
    board = models.ForeignKey(Board, on_delete=models.CASCADE)
 
 
-class Board(models.Model):
-   boardname = models.CharField(max_lengh=100)
-
-
 class University(models.Model):
-   universityname = models.CharField(max_lengh=100)
+   universityname = models.TextField()
    board = models.ForeignKey(Board, on_delete=models.CASCADE)
 
 
 class Faculty(models.Model):
-   facultyname = models.CharField(max_lengh=100)
+   facultyname = models.TextField()
    university = models.ForeignKey(University, on_delete=models.CASCADE)
    board = models.ForeignKey(Board, on_delete=models.CASCADE)
 
 
 class Department(models.Model):
-   departmentname = models.CharField(max_lengh=100)
-   faulty = models.ForeignKey(Faulty, on_delete=models.CASCADE)
+   departmentname = models.TextField()
+   faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
    university = models.ForeignKey(University, on_delete=models.CASCADE)
    board = models.ForeignKey(Board, on_delete=models.CASCADE)
 
@@ -44,14 +44,14 @@ class Department(models.Model):
 class Posts(models.Model):
    user = models.ForeignKey(User, on_delete=models.CASCADE)
    timestemp = models.DateTimeField(auto_now_add=True)
-   title = models.CharField(max_length=100)
-   content = models.CharField(max_length=3000)
+   title = models.TextField()
+   content = models.TextField()
    
 
 class Comment(models.Model):
    user = models.ForeignKey(User, on_delete=models.CASCADE)
    timestemp = models.DateTimeField(auto_now_add=True)
    posts = models.ForeignKey(Posts, on_delete=models.CASCADE)
-   comment = models.CharField(max_lengh=1000)
+   comment = models.TextField()
 
 
