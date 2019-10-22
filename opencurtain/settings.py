@@ -41,6 +41,10 @@ INSTALLED_APPS = [
     'rest_framework',
 ]
 
+LOGIN_URL = '/accounts/login/'
+LOGOUT_URL = '/accounts/logout/'
+LOGIN_REDIRECT_URL = '/'
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -100,6 +104,9 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+AUTH_USER_MODEL = 'opencurtain.User'
+AUTHENTICATION_BACKENDS = ('opencurtain.backends.OpencurtainBackend',)
 
 
 # Internationalization

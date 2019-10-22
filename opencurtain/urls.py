@@ -33,4 +33,7 @@ router.register(r'comments', CommentViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path(r'^opencurtains/', include('django.contrib.auth.urls')),
+    path(r'^opencurtains/register/$', UserCreateView.as_view(), name='register'),
+    path(r'^opencurtians/register/done/$', UserCreateDoneTemplateView.as_view(), name='register_done'),
 ]
