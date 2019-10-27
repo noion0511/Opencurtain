@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'restserver',
+    'account',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -105,8 +106,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTH_USER_MODEL = 'opencurtain.User'
-AUTHENTICATION_BACKENDS = ('opencurtain.backends.OpencurtainBackend',)
+AUTH_USER_MODEL = 'account.User'
+AUTHENTICATION_BACKENDS = ('account.backends.OpencurtainBackend',)
 
 
 # Internationalization
@@ -131,4 +132,4 @@ STATIC_URL = '/static/'
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10
-    }
+}

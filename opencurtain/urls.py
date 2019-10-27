@@ -19,8 +19,6 @@ from rest_framework import routers
 from restserver.views import *
 
 router = routers.DefaultRouter()
-
-router.register(r'users', UserViewSet)
 router.register(r'subscribes', SubscribeViewSet)
 router.register(r'boards', BoardViewSet)
 router.register(r'universitys', UniversityViewSet)
@@ -32,8 +30,9 @@ router.register(r'comments', CommentViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('user/', UserDetail.as_view()),
+    path('user/login', UserLogin.as_view()),
+    path('user/logout', UserLogout.as_view()),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path(r'^opencurtains/', include('django.contrib.auth.urls')),
-    path(r'^opencurtains/register/$', UserCreateView.as_view(), name='register'),
-    path(r'^opencurtians/register/done/$', UserCreateDoneTemplateView.as_view(), name='register_done'),
+    path('account', include('django.contrib.auth.urls')),
 ]

@@ -2,8 +2,16 @@
 # Created by https://www.gitignore.io/api/django
 # Edit at https://www.gitignore.io/?templates=django
 
-# migration
-restserver/migrations/*
+# vs code
+.vscode/*
+
+# venv
+venv/*
+env/*
+
+# migration and db
+*/migrations/*
+*.sqlite3
 
 ### Django ###
 *.log
