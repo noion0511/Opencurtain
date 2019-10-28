@@ -15,24 +15,21 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework import routers
 from restserver.views import *
-
-router = routers.DefaultRouter()
-router.register(r'subscribes', SubscribeViewSet)
-router.register(r'boards', BoardViewSet)
-router.register(r'universitys', UniversityViewSet)
-router.register(r'facultys', FacultyViewSet)
-router.register(r'departments', DepartmentViewSet)
-router.register(r'posts', PostsViewSet)
-router.register(r'comments', CommentViewSet)
 
 
 urlpatterns = [
-    path('', include(router.urls)),
     path('user/', UserDetail.as_view()),
     path('user/login/', UserLogin.as_view()),
     path('user/logout/', UserLogout.as_view()),
     path('authcode/', AuthCode.as_view()),
     path('authcheck/', AuthCheck.as_view()),
+    path('subscribes/', SubscribeView.as_view()),
+    path('universitys/', UniversityView.as_view()),
+    path('facultys/<int:university_id>', FacultyView.as_view()),
+    path('departments/<int:faculty_id>', DepartmentView.as_view()),
+    path('posts/<int:board_id>', PostView.as_view()),
+    path('posts/', PostWriteView.as_view()),
+    path('comments/<int:post_id>', CommentView.as_view()),
+    path('comments/<int:post_id>/<int:comment_id>', CommentDeleteView.as_view()),
 ]

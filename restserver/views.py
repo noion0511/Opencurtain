@@ -87,6 +87,7 @@ class AuthCode(APIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         
+
 class AuthCheck(APIView):
     def post(self, request, *args, **kwargs):
         email = request.data.get('email')
@@ -101,51 +102,169 @@ class AuthCheck(APIView):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-class SubscribeViewSet(viewsets.ModelViewSet):
-    queryset = Subscribe.objects.all()
-    serializer_class = serializers.SubscribeSerializer
+class SubscribeView(APIView):
+    def get(self, request, *args, **kwargs):
+        user = request.user
 
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
-
-class BoardViewSet(viewsets.ModelViewSet):
-    queryset = Board.objects.all()
-    serializer_class = serializers.BoardSerializer
-
-class UniversityViewSet(viewsets.ModelViewSet):
-    queryset = University.objects.all()
-    serializer_class = serializers.UniversitySerializer
-
-
-class FacultyViewSet(viewsets.ModelViewSet):
-    queryset = Faculty.objects.all()
-    serializer_class = serializers.FacultySerializer
-
-
-class DepartmentViewSet(viewsets.ModelViewSet):
-    queryset = Department.objects.all()
-    serializer_class = serializers.DepartmentSerializer
-
-
-class PostsViewSet(viewsets.ModelViewSet):
-    queryset = Posts.objects.all()
-    serializer_class = serializers.PostsSerializer
-
-    def perform_create(self, serializer):
-        user = self.request.user
         if user == None or user.is_anonymous:
-            raise Http404
-        serializer.save(user=user)
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        subscribes = Subscribe.objects.filter(user=user)
+        serializer = serializers.SubscribeSerializer(subscribes, many=True)
+        return Response(serializer.data)
 
+    def post(self, request, *args, **kwargs):
+        user = request.user
 
-class CommentViewSet(viewsets.ModelViewSet):
-    queryset = Comment.objects.all()
-    serializer_class = serializers.CommentSerializer
-
-    def perform_create(self, serializer):
-        user = self.request.user
         if user == None or user.is_anonymous:
-            raise Http404
-        serializer.save(user=user)
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
+        board = Board.objects.get(pk=request.data.get('board'))
+        subscribe = Subscribe.objects.filter(board=board, user=user)
+
+        if len(subscribe) == 0:
+            Subscribe.objects.create(user=user, board=board)
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_200_OK)
+
+    def delete(self, request, *args, **kwargs):
+        user = request.user
+
+        if user == None or user.is_anonymous:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        subscribe = Subscribe.objects.get(pk=request.data.get('subscribe'))
+
+        if user == subscribe.user:
+            subscribe.delete()
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class UniversityView(APIView):
+    def get(self, request, *args, **kwargs):
+        university = University.objects.all()
+        serializer = serializers.UniversitySerializer(university, many=True)
+        return Response(serializer.data)
+
+
+class FacultyView(APIView):
+    def get(self, request, *args, **kwargs):
+        university = University.objects.get(pk=kwargs['university_id'])
+        faculty = Faculty.objects.filter(university=university)
+        serializer = serializers.FacultySerializer(faculty, many=True)
+        return Response(serializer.data)
+
+                  
+class DepartmentView(APIView):
+    def get(self, request, *args, **kwargs):
+        faculty = Faculty.objects.get(pk=kwargs['faculty_id'])
+        department = Department.objects.filter(faculty=faculty)
+        serializer = serializers.DepartmentSerializer(department, many=True)
+        return Response(serializer.data)
+
+
+class PostView(APIView):
+    def get(self, request, *args, **kwargs):
+        user = request.user
+
+        if user == None or user.is_anonymous:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        board = Board.objects.get(pk=kwargs['board_id'])
+        subscribe = Subscribe.objects.filter(board=board, user=user)
+
+        if len(subscribe) == 0:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        posts = Posts.objects.filter(board=board)
+        serializer = serializers.PostsSerializer(posts, many=True)
+        return Response(serializer.data)
+
+
+    def delete(self, request, *args, **kwargs):
+        user = request.user
+
+        if user == None or user.is_anonymous:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        posts = Posts.objects.get(pk=request.data.get('posts'))
+
+        if user == posts.user:
+            posts.delete()
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class PostWriteView(APIView):
+    def post(self, request, *args, **kwargs):
+        user = request.user
+
+        if user == None or user.is_anonymous:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        board = Board.objects.get(pk=request.data.get('board'))
+        subscribe = Subscribe.objects.filter(board=board, user=user)
+
+        if len(subscribe) == 0:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        title = request.data.get('title')
+        content = request.data.get('content')
+        Posts.objects.create(user=user, board=board, title=title, content=content)
+        return Response(status=status.HTTP_200_OK)
+
+
+class CommentView(APIView):
+    def get(self, request, *args, **kwargs):
+        user = request.user
+
+        if user == None or user.is_anonymous:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        posts = Posts.objects.filter(pk=kwargs['post_id'])
+        subscribe = Subscribe.objects.filter(board=posts.board, user=user)
+
+        if len(subscribe) == 0:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        comment = Comment.objects.get(post=post)
+        serializer = serializers.CommentSerializer(comment, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+
+        if user == None or user.is_anonymous:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        board = Board.objects.get(pk=request.data.get('board'))
+        subscribe = Subscribe.objects.filter(board=posts.board, user=user)
+
+        if len(subscribe) == 0:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        posts = Posts.objects.filter(pk=kwargs['post_id'])
+        comment = request.data.get('comment')
+        Comment.objects.create(user=user, posts=posts, comment=comment)
+        return Response(status=status.HTTP_200_OK)
+
+
+class CommentDeleteView(APIView):
+    def delete(self, request, *args, **kwargs):
+        user = request.user
+
+        if user == None or user.is_anonymous:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        posts = Posts.objects.filter(pk=kwargs['post_id'])
+        comment = Comment.objects.get(pk=request.data.get('comment'))
+
+        if user == posts.user or user == comment.user:
+            comment.delete()
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
