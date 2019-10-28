@@ -101,31 +101,66 @@ class AuthCheck(APIView):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-class SubscribeViewSet(viewsets.ModelViewSet):
-    queryset = Subscribe.objects.all()
-    serializer_class = serializers.SubscribeSerializer
+class SubscribeView(APIView):
+    def get(self, request, *args, **kwargs):
+        user = request.user
 
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        if user == None or user.is_anonymous:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        subscribes = Subscribe.objects.filter(user=user)
+
+        serializer = serializers.SubscribeSerializer(subscribes, many=True)
+ 
+        return Response(serializer.data)
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+
+        if user == None or user.is_anonymous:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        board = Board.objects.get(pk=request.data.get('board'))
+        Subscribe.objects.create(user=user, board=board)
+        
+        return Response(status=status.HTTP_200_OK)
+
+    def delete(self, request, *args, **kwargs):
+        user = request.user
+
+        if user == None or user.is_anonymous:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        subscribe = Subscribe.objects.get(pk=request.data.get('subscribe'))
+
+        if user == subscribe.user:
+            subscribe.delete()
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-class BoardViewSet(viewsets.ModelViewSet):
-    queryset = Board.objects.all()
-    serializer_class = serializers.BoardSerializer
-
-class UniversityViewSet(viewsets.ModelViewSet):
-    queryset = University.objects.all()
-    serializer_class = serializers.UniversitySerializer
+class UniversityView(APIView):
+    def get(self, request, *args, **kwargs):
+        university = University.objects.all()
+        serializer = serializers.UniversitySerializer(university, many=True)
+        return Response(serializer.data)
 
 
-class FacultyViewSet(viewsets.ModelViewSet):
-    queryset = Faculty.objects.all()
-    serializer_class = serializers.FacultySerializer
+class FacultyView(APIView):
+    def get(self, request, *args, **kwargs):
+        university = University.objects.get(pk=kwargs['university_id'])
+        faculty = Faculty.objects.filter(university=university)
+        serializer = serializers.FacultySerializer(faculty, many=True)
+        return Response(serializer.data)
 
-
-class DepartmentViewSet(viewsets.ModelViewSet):
-    queryset = Department.objects.all()
-    serializer_class = serializers.DepartmentSerializer
+                  
+class DepartmentView(APIView):
+    def get(self, request, *args, **kwargs):
+        faculty = Faculty.objects.get(pk=kwargs['faculty_id'])
+        department = Department.objects.filter(faculty=faculty)
+        serializer = serializers.DepartmentSerializer(department, many=True)
+        return Response(serializer.data)
 
 
 class PostsViewSet(viewsets.ModelViewSet):
