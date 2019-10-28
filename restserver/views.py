@@ -101,7 +101,18 @@ class AuthCheck(APIView):
         
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
+class UserPostView(APIView):
+    def get(self, request, *args, **kwargs):
+        user = request.user
 
+        if user == None or user.is_anonymous:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+       
+        posts = Posts.objects.filter(user=user)
+        serializer = serializers.PostsSerializer(posts, many=True)
+        return Response(serializer.data)
+
+    
 class SubscribeView(APIView):
     def get(self, request, *args, **kwargs):
         user = request.user
