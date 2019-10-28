@@ -42,6 +42,7 @@ class UserDetail(APIView):
                     Subscribe.objects.create(user=user, board=un.board)
                     Subscribe.objects.create(user=user, board=fa.board)
                     Subscribe.objects.create(user=user, board=de.board)
+                    auth.delete()
                     
                     return Response(status=status.HTTP_200_OK)
         except Exception as err:
