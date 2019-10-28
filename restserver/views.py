@@ -31,12 +31,14 @@ class UserDetail(APIView):
                 auth = UserAuth.objects.get(email=email)
 
                 if auth and auth.authcode == authcode:
+                    allboard = Board.objects.get(pk=1)
                     un = University.objects.get(pk=request.data['university'])
                     fa = Faculty.objects.get(pk=request.data['faculty'])
                     de = Department.objects.get(pk=request.data['department'])
 
                     user = User.objects.create_user(email, request.data['username'], un, fa, de, password=request.data['password'])
 
+                    Subscribe.objects.create(user=user, board=allboard)
                     Subscribe.objects.create(user=user, board=un.board)
                     Subscribe.objects.create(user=user, board=fa.board)
                     Subscribe.objects.create(user=user, board=de.board)
