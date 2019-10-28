@@ -19,8 +19,6 @@ from rest_framework import routers
 from restserver.views import *
 
 router = routers.DefaultRouter()
-router.register(r'posts', PostsViewSet)
-router.register(r'comments', CommentViewSet)
 
 
 urlpatterns = [
@@ -34,4 +32,8 @@ urlpatterns = [
     path('universitys/', UniversityView.as_view()),
     path('facultys/<int:university_id>', FacultyView.as_view()),
     path('departments/<int:faculty_id>', DepartmentView.as_view()),
+    path('posts/<int:board_id>', PostView.as_view()),
+    path('posts/', PostWriteView.as_view()),
+    path('comments/<int:post_id>', CommentView.as_view()),
+    path('comments/<int:post_id>/<int:comment_id>', CommentDeleteView.as_view()),
 ]
