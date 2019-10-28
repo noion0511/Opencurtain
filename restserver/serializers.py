@@ -1,5 +1,6 @@
 from .models import *
 from rest_framework import serializers
+from account.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -40,7 +41,7 @@ class DepartmentSerializer(serializers.ModelSerializer):
 class PostsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Posts
-        fields = ['id', 'user', 'timestemp', 'title', 'content']
+        fields = ['id', 'user', 'board', 'timestemp', 'title', 'content']
 
 
 class CommentSerializer(serializers.ModelSerializer):

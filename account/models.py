@@ -10,23 +10,15 @@ from django.contrib.auth.models import(
 
 class UserManager(BaseUserManager):
     def create_user(self, email, username, university, faculty, department, password=None):
-        print(email, username, university, faculty, department, password)
         if not email:
             raise ValueError(_('Users must have an email address'))
-
-        try:
-            un = University.objects.get(pk=university)
-            fa = Faculty.objects.get(pk=faculty)
-            de = Department.objects.get(pk=department)
-        except University.DoesNotExist or Faculty.DoesNotExist or Department.DoesNotExist:
-            raise ValueError(_('Does not exists university'))
 
         user = self.model(
             email = self.normalize_email(email),
             username = username,
-            university = un,
-            faculty = fa,
-            department = de,
+            university = university,
+            faculty = faculty,
+            department = department,
         )
 
         user.set_password(password)
@@ -113,4 +105,17 @@ class User(AbstractBaseUser, PermissionsMixin):
 
         except User.DoesNotExist:
             return False
+        
+class UserAuth(models.Model):
+    email = models.EmailField(
+        verbose_name = _('Email address'),
+        max_length = 225,
+        unique = True
+    )
+    
+    authcode = models.CharField(
+            verbose_name=_('Auth Code'),
+            max_length=4,
+            blank=True
+    )
 
