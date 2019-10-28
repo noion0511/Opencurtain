@@ -119,10 +119,10 @@ class SubscribeView(APIView):
         if user == None or user.is_anonymous:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        subscribe = Subscribe.objects.filter(board=posts.board, user=user)
+        board = Board.objects.get(pk=request.data.get('board'))
+        subscribe = Subscribe.objects.filter(board=board, user=user)
 
         if len(subscribe) == 0:
-            board = Board.objects.get(pk=request.data.get('board'))
             Subscribe.objects.create(user=user, board=board)
             return Response(status=status.HTTP_200_OK)
         else:
