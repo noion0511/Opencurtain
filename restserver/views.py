@@ -177,6 +177,18 @@ class DepartmentView(APIView):
         return Response(serializer.data)
 
 
+class AllDepartmentView(APIView):
+    def get(self, request, *args, **kwargs):
+        user = request.user
+
+        if user == None or user.is_anonymous:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        department = Department.objects.all()
+        serializer = serializers.DepartmentSerializer(department, many=True)
+        return Response(serializer.data)
+
+
 class PostView(APIView):
     def get(self, request, *args, **kwargs):
         user = request.user
@@ -210,6 +222,39 @@ class PostView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+class APostView(APIView):
+    def get(self, request, *args, **kwargs):
+        user = request.user
+
+        if user == None or user.is_anonymous:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        board = Board.objects.get(pk=kwargs['board_id'])
+        subscribe = Subscribe.objects.filter(board=board, user=user)
+
+        if len(subscribe) == 0:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        posts = Posts.objects.get(pk=kwargs['post_id'])
+        serializer = serializers.PostsSerializer(posts, many=True)
+        return Response(serializer.data)
+
+    def delete(self, request, *args, **kwargs):
+        user = request.user
+
+        if user == None or user.is_anonymous:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        posts = Posts.objects.get(pk=kwargs['post_id'])
+
+        if user == posts.user:
+            posts.delete()
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+    
 class PostWriteView(APIView):
     def post(self, request, *args, **kwargs):
         user = request.user
@@ -225,7 +270,8 @@ class PostWriteView(APIView):
         
         title = request.data.get('title')
         content = request.data.get('content')
-        Posts.objects.create(user=user, board=board, title=title, content=content)
+        image = request.data.get('image')
+        Posts.objects.create(user=user, board=board, title=title, content=content, image=image)
         return Response(status=status.HTTP_200_OK)
 
 
@@ -278,3 +324,4 @@ class CommentDeleteView(APIView):
             return Response(status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+

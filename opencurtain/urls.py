@@ -16,6 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from restserver.views import *
+from django.conf import settings
+from django.conf.urls.static import static
 
 
 urlpatterns = [
@@ -30,6 +32,8 @@ urlpatterns = [
     path('departments/<int:faculty_id>', DepartmentView.as_view()),
     path('posts/<int:board_id>', PostView.as_view()),
     path('posts/', PostWriteView.as_view()),
+    path('posts/<int:board_id>/<int:post_id>',APostView.as_view()),
     path('comments/<int:post_id>', CommentView.as_view()),
     path('comments/<int:post_id>/<int:comment_id>', CommentDeleteView.as_view()),
+    path('media/<int:post_id>/<int:image_id>', PostWriteView.as_view()),
 ]
