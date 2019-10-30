@@ -176,7 +176,7 @@ class SubscribeDeleteView(APIView):
 
         subscribe = Subscribe.objects.get(pk=kwargs['subscribe_id'])
 
-        if user == subscribe.user:
+        if user == subscribe.user and subscribe.board.id != 1:
             subscribe.delete()
             return Response(status=status.HTTP_200_OK)
         else:
