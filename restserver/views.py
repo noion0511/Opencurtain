@@ -10,9 +10,16 @@ from opencurtain.settings import AUTHENTICATION_BACKENDS as backends
 import random
 from django.core.mail import send_mail
 from django.http import Http404
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
+
+class CsrfExemptSessionAuthentication(SessionAuthentication):
+    def enforce_csrf(self, request):
+        return
 
 class UserDetail(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+
     def get(self, request, *args, **kwargs):
         user = request.user
 
@@ -52,6 +59,8 @@ class UserDetail(APIView):
 
 
 class UserLogin(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+
     def post(self, request, *args, **kwargs):
         backend = get_backends()[0]
         user = backend.authenticate(request, username=request.data.get('email'), password=request.data.get('password'))
@@ -69,6 +78,8 @@ class UserLogout(APIView):
     
     
 class AuthCode(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+
     def post(self, request, *args, **kwargs):
         email = request.data.get('email')
         if email:
@@ -89,6 +100,8 @@ class AuthCode(APIView):
         
 
 class AuthCheck(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+
     def post(self, request, *args, **kwargs):
         email = request.data.get('email')
         authcode = request.data.get('authcode')
@@ -114,6 +127,8 @@ class UserPostView(APIView):
 
     
 class SubscribeView(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+
     def get(self, request, *args, **kwargs):
         user = request.user
 
@@ -190,6 +205,8 @@ class AllDepartmentView(APIView):
 
 
 class PostView(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+
     def get(self, request, *args, **kwargs):
         user = request.user
 
@@ -256,6 +273,8 @@ class APostView(APIView):
 
     
 class PostWriteView(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+
     def post(self, request, *args, **kwargs):
         user = request.user
 
@@ -276,6 +295,8 @@ class PostWriteView(APIView):
 
 
 class CommentView(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+
     def get(self, request, *args, **kwargs):
         user = request.user
 
@@ -310,6 +331,8 @@ class CommentView(APIView):
 
 
 class CommentDeleteView(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    
     def delete(self, request, *args, **kwargs):
         user = request.user
 
