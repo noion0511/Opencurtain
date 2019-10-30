@@ -61,8 +61,8 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ['user', 'timestemp', 'posts', 'comment']
 
 
-class PersonSerializer(serializers.HyperlinkedModelSerializer):
+class ImageSerializer(serializers.HyperlinkedModelSerializer):
     image = serializers.ImageField(use_url=True)
     class Meta:
         model = ImageUpload
-        fields = ('posts', 'image')
+        fields = ['posts', 'image']
