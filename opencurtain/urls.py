@@ -28,6 +28,7 @@ urlpatterns = [
     path('subscribes/', SubscribeView.as_view()),
     path('universitys/', UniversityView.as_view()),
     path('facultys/<int:university_id>', FacultyView.as_view()),
+    path('departments/', AllDepartmentView.as_view()),
     path('departments/<int:faculty_id>', DepartmentView.as_view()),
     path('posts/<int:board_id>', PostView.as_view()),
     path('posts/', PostWriteView.as_view()),
