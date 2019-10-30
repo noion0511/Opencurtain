@@ -314,7 +314,7 @@ class CommentView(APIView):
         if user == None or user.is_anonymous:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        posts = Posts.objects.filter(pk=kwargs['post_id'])
+        posts = Posts.objects.get(pk=kwargs['post_id'])
         subscribe = Subscribe.objects.filter(board=posts.board, user=user)
 
         if len(subscribe) == 0:
@@ -330,7 +330,7 @@ class CommentView(APIView):
         if user == None or user.is_anonymous:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        posts = Posts.objects.filter(pk=kwargs['post_id'])
+        posts = Posts.objects.get(pk=kwargs['post_id'])
         subscribe = Subscribe.objects.filter(board=posts.board, user=user)
 
         if len(subscribe) == 0:
