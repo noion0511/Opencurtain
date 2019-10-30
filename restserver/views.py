@@ -164,13 +164,17 @@ class SubscribeView(APIView):
         else:
             return Response(status=status.HTTP_200_OK)
 
+        
+class SubscribeDeleteView(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    
     def delete(self, request, *args, **kwargs):
         user = request.user
 
         if user == None or user.is_anonymous:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        subscribe = Subscribe.objects.get(pk=request.data.get('subscribe'))
+        subscribe = Subscribe.objects.get(pk=kwargs['subscribe_id'])
 
         if user == subscribe.user:
             subscribe.delete()
@@ -244,21 +248,6 @@ class PostView(APIView):
         posts = Posts.objects.filter(board=board)
         serializer = serializers.PostsSerializer(posts, many=True)
         return Response(serializer.data)
-
-
-    def delete(self, request, *args, **kwargs):
-        user = request.user
-
-        if user == None or user.is_anonymous:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        
-        posts = Posts.objects.get(pk=request.data.get('posts'))
-
-        if user == posts.user:
-            posts.delete()
-            return Response(status=status.HTTP_200_OK)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class APostView(APIView):
@@ -370,4 +359,5 @@ class CommentDeleteView(APIView):
             return Response(status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
 
