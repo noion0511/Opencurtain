@@ -66,7 +66,9 @@ class UserLogin(APIView):
         user = backend.authenticate(request, username=request.data.get('email'), password=request.data.get('password'))
         if user:
             login(request, user)
-            return Response(status=status.HTTP_200_OK)
+            serializer = serializers.UserSerializer(user)
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
