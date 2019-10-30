@@ -161,8 +161,9 @@ class SubscribeView(APIView):
         subscribe = Subscribe.objects.filter(board=board, user=user)
 
         if len(subscribe) == 0:
-            Subscribe.objects.create(user=user, board=board)
-            return Response(status=status.HTTP_200_OK)
+            subscribes = Subscribe.objects.create(user=user, board=board)
+            serializer = serializers.SubscribeSerializer(subscribes)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_200_OK)
 
@@ -304,8 +305,10 @@ class PostWriteView(APIView):
         
         title = request.data.get('title')
         content = request.data.get('content')
-        Posts.objects.create(user=user, board=board, title=title, content=content)
-        return Response(status=status.HTTP_200_OK)
+        post = Posts.objects.create(user=user, board=board, title=title, content=content)
+
+        serializer = serializers.PostsSerializer(post)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class CommentView(APIView):
@@ -340,8 +343,10 @@ class CommentView(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
         
         comment = request.data.get('comment')
-        Comment.objects.create(user=user, posts=posts, comment=comment)
-        return Response(status=status.HTTP_200_OK)
+        comments = Comment.objects.create(user=user, posts=posts, comment=comment)
+
+        serializer = serializers.CommentSerializer(comments)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class CommentDeleteView(APIView):
@@ -353,7 +358,7 @@ class CommentDeleteView(APIView):
         if user == None or user.is_anonymous:
             return Response(status=status.HTTP_404_NOT_FOUND)
         
-        posts = Posts.objects.filter(pk=kwargs['post_id'])
+        posts = Posts.objects.get(pk=kwargs['post_id'])
         comment = Comment.objects.get(pk=kwargs['comment_id'])
 
         if user == posts.user or user == comment.user:
