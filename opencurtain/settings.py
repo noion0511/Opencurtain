@@ -36,6 +36,9 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
+# email auth
+ALLOWED_EMAIL_HOSTS = ['jejunu.ac.kr', 'chu.ac.kr', 'jtu.ac.kr', 'jeju.ac.kr']
+
 # Application definition
 
 INSTALLED_APPS = [

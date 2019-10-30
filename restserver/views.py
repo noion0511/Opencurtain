@@ -6,7 +6,7 @@ from account.models import User, UserAuth
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth import login, logout, get_backends
-from opencurtain.settings import AUTHENTICATION_BACKENDS as backends
+from opencurtain.settings import AUTHENTICATION_BACKENDS as backends, ALLOWED_EMAIL_HOSTS
 import random
 from django.core.mail import send_mail
 from django.http import Http404
@@ -83,10 +83,20 @@ class AuthCode(APIView):
     def post(self, request, *args, **kwargs):
         email = request.data.get('email')
         if email:
+            tokens = email.split('@')
+            domain = tokens[len(tokens)-1]
+
+            if ALLOWED_EMAIL_HOSTS.count(domain) != 1:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+
             try:
                 auth = UserAuth.objects.get(email=email)
                 if auth:
                     auth.delete()
+
+                user = User.objects.get(email=email)
+                if user:
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
             except:
                 pass
             
