@@ -14,9 +14,12 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class SubscribeSerializer(serializers.ModelSerializer):
+    boardname = serializers.ReadOnlyField(source='board.boardname')
+
     class Meta:
         model = Subscribe
-        fields = ['id', 'board']
+        fields = ['id', 'board', 'boardname']
+
 
 class BoardSerializer(serializers.ModelSerializer):
     class Meta:
