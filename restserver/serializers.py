@@ -46,20 +46,20 @@ class DepartmentSerializer(serializers.ModelSerializer):
 
 
 class PostsSerializer(serializers.ModelSerializer):
-    user = serializers.ReadOnlyField(source='user.username')
+    username = serializers.ReadOnlyField(source='user.username')
     universityname = serializers.ReadOnlyField(source='user.university.universityname')
 
     class Meta:
         model = Posts
-        fields = ['id', 'user', 'universityname', 'board', 'timestamp', 'title', 'content']
+        fields = ['id', 'user', 'username', 'universityname', 'board', 'timestamp', 'title', 'content']
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    user = serializers.ReadOnlyField(source='user.username')
+    username = serializers.ReadOnlyField(source='user.username')
 
     class Meta:
         model = Comment
-        fields = ['id', 'user', 'timestamp', 'posts', 'comment']
+        fields = ['id', 'user', 'username', 'timestamp', 'posts', 'comment']
 
 
 class ImageSerializer(serializers.HyperlinkedModelSerializer):
