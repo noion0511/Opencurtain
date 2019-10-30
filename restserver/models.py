@@ -49,7 +49,7 @@ class Subscribe(models.Model):
 class Posts(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     board = models.ForeignKey(Board, on_delete=models.CASCADE)
-    timestemp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
     title = models.TextField()
     content = models.TextField()
 
@@ -59,7 +59,7 @@ class Posts(models.Model):
 
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    timestemp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
     posts = models.ForeignKey(Posts, on_delete=models.CASCADE)
     comment = models.TextField()
 
