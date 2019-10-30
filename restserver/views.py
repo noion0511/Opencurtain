@@ -37,7 +37,7 @@ class UserDetail(APIView):
             if email and authcode:
                 auth = UserAuth.objects.get(email=email)
 
-                if auth and auth.authcode == authcode:
+                if auth and str(auth.authcode) == str(authcode):
                     allboard = Board.objects.get(pk=1)
                     un = University.objects.get(pk=request.data['university'])
                     fa = Faculty.objects.get(pk=request.data['faculty'])
