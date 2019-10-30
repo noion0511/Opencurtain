@@ -262,6 +262,8 @@ class PostView(APIView):
 
 
 class APostView(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    
     def get(self, request, *args, **kwargs):
         user = request.user
 
