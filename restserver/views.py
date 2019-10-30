@@ -183,6 +183,18 @@ class FacultyView(APIView):
         serializer = serializers.FacultySerializer(faculty, many=True)
         return Response(serializer.data)
 
+
+class AllFacultyView(APIView):
+    def get(self, request, *args, **kwargs):
+        user = request.user
+
+        if user == None or user.is_anonymous:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        faculty = Faculty.objects.all()
+        serializer = serializers.FacultySerializer(faculty, many=True)
+        return Response(serializer.data)
+
                   
 class DepartmentView(APIView):
     def get(self, request, *args, **kwargs):
