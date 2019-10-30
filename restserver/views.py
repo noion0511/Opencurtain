@@ -270,8 +270,7 @@ class PostWriteView(APIView):
         
         title = request.data.get('title')
         content = request.data.get('content')
-        image = request.data.get('image')
-        Posts.objects.create(user=user, board=board, title=title, content=content, image=image)
+        Posts.objects.create(user=user, board=board, title=title, content=content)
         return Response(status=status.HTTP_200_OK)
 
 

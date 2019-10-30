@@ -52,7 +52,6 @@ class Posts(models.Model):
     timestemp = models.DateTimeField(auto_now_add=True)
     title = models.TextField()
     content = models.TextField()
-    image = models.ImageField()
 
     def __str__(self):
         return self.title
@@ -70,4 +69,4 @@ class Comment(models.Model):
 
 class ImageUpload(models.Model):
     posts = models.ForeignKey(Posts, on_delete=models.CASCADE) 
-    image = models.ImageField()
+    image = models.FileField()
