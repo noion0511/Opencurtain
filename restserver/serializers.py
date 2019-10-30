@@ -51,7 +51,7 @@ class PostsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Posts
-        fields = ['id', 'user', 'universityname', 'board', 'timestemp', 'title', 'content']
+        fields = ['id', 'user', 'universityname', 'board', 'timestamp', 'title', 'content']
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -59,7 +59,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ['user', 'timestemp', 'posts', 'comment']
+        fields = ['user', 'timestamp', 'posts', 'comment']
 
 
 class ImageSerializer(serializers.HyperlinkedModelSerializer):
