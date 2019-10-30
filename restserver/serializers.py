@@ -59,7 +59,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ['user', 'username', 'timestamp', 'posts', 'comment']
+        fields = ['id', 'user', 'username', 'timestamp', 'posts', 'comment']
 
 
 class ImageSerializer(serializers.HyperlinkedModelSerializer):
