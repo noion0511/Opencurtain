@@ -4,6 +4,10 @@ from account.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
+    university = serializers.ReadOnlyField(source='university.username')
+    faculty = serializers.ReadOnlyField(source='faculty.username')
+    department = serializers.ReadOnlyField(source='department.username')
+
     class Meta:
         model = User
         fields = ['id', 'username', 'email', 'university', 'faculty', 'department']
@@ -12,7 +16,7 @@ class UserSerializer(serializers.ModelSerializer):
 class SubscribeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subscribe
-        fields = ['id', 'user', 'board']
+        fields = ['id', 'board']
 
 class BoardSerializer(serializers.ModelSerializer):
     class Meta:
@@ -39,12 +43,16 @@ class DepartmentSerializer(serializers.ModelSerializer):
 
 
 class PostsSerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(source='user.username')
+
     class Meta:
         model = Posts
         fields = ['id', 'user', 'board', 'timestemp', 'title', 'content']
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(source='user.username')
+
     class Meta:
         model = Comment
         fields = ['user', 'timestemp', 'posts', 'comment']
