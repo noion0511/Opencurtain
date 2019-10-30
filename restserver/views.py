@@ -353,7 +353,7 @@ class CommentDeleteView(APIView):
         if user == None or user.is_anonymous:
             return Response(status=status.HTTP_404_NOT_FOUND)
         
-        posts = Posts.objects.filter(pk=kwargs['post_id'])
+        posts = Posts.objects.get(pk=kwargs['post_id'])
         comment = Comment.objects.get(pk=kwargs['comment_id'])
 
         if user == posts.user or user == comment.user:
