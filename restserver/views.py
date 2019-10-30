@@ -330,7 +330,7 @@ class CommentView(APIView):
         if len(subscribe) == 0:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        comment = Comment.objects.get(post=post)
+        comment = Comment.objects.filter(posts=posts)
         serializer = serializers.CommentSerializer(comment, many=True)
         return Response(serializer.data)
 
