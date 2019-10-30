@@ -22,6 +22,7 @@ urlpatterns = [
     path('user/', UserDetail.as_view()),
     path('user/login/', UserLogin.as_view()),
     path('user/logout/', UserLogout.as_view()),
+    path('user/post', UserPostView.as_view()),
     path('authcode/', AuthCode.as_view()),
     path('authcheck/', AuthCheck.as_view()),
     path('subscribes/', SubscribeView.as_view()),
