@@ -29,6 +29,7 @@ urlpatterns = [
     path('authcheck/', AuthCheck.as_view()),
     path('subscribes/', SubscribeView.as_view()),
     path('universitys/', UniversityView.as_view()),
+    path('facultys/', AllFacultyView.as_view()),
     path('facultys/<int:university_id>', FacultyView.as_view()),
     path('departments/', AllDepartmentView.as_view()),
     path('departments/<int:faculty_id>', DepartmentView.as_view()),
