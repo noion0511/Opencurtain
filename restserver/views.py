@@ -93,6 +93,10 @@ class AuthCode(APIView):
                 auth = UserAuth.objects.get(email=email)
                 if auth:
                     auth.delete()
+
+                user = User.objects.get(email=email)
+                if user:
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
             except:
                 pass
             
