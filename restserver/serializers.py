@@ -47,10 +47,11 @@ class DepartmentSerializer(serializers.ModelSerializer):
 
 class PostsSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.username')
+    universityname = serializers.ReadOnlyField(source='user.university.universityname')
 
     class Meta:
         model = Posts
-        fields = ['id', 'user', 'board', 'timestemp', 'title', 'content']
+        fields = ['id', 'user', 'universityname', 'board', 'timestemp', 'title', 'content']
 
 
 class CommentSerializer(serializers.ModelSerializer):
