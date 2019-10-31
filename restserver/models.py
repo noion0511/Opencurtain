@@ -49,17 +49,20 @@ class Subscribe(models.Model):
 class Posts(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     board = models.ForeignKey(Board, on_delete=models.CASCADE)
-    timestemp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
     title = models.TextField()
     content = models.TextField()
 
     def __str__(self):
         return self.title
-   
+    
+    class Meta:
+        ordering = ['-timestamp']
+
 
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    timestemp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
     posts = models.ForeignKey(Posts, on_delete=models.CASCADE)
     comment = models.TextField()
 
@@ -67,3 +70,6 @@ class Comment(models.Model):
         return self.comment
 
 
+class ImageUpload(models.Model):
+    posts = models.ForeignKey(Posts, on_delete=models.CASCADE) 
+    image = models.FileField()

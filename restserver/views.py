@@ -6,13 +6,20 @@ from account.models import User, UserAuth
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth import login, logout, get_backends
-from opencurtain.settings import AUTHENTICATION_BACKENDS as backends
+from opencurtain.settings import AUTHENTICATION_BACKENDS as backends, ALLOWED_EMAIL_HOSTS
 import random
 from django.core.mail import send_mail
 from django.http import Http404
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
+
+class CsrfExemptSessionAuthentication(SessionAuthentication):
+    def enforce_csrf(self, request):
+        return
 
 class UserDetail(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+
     def get(self, request, *args, **kwargs):
         user = request.user
 
@@ -30,7 +37,7 @@ class UserDetail(APIView):
             if email and authcode:
                 auth = UserAuth.objects.get(email=email)
 
-                if auth and auth.authcode == authcode:
+                if auth and str(auth.authcode) == str(authcode):
                     allboard = Board.objects.get(pk=1)
                     un = University.objects.get(pk=request.data['university'])
                     fa = Faculty.objects.get(pk=request.data['faculty'])
@@ -52,12 +59,16 @@ class UserDetail(APIView):
 
 
 class UserLogin(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+
     def post(self, request, *args, **kwargs):
         backend = get_backends()[0]
         user = backend.authenticate(request, username=request.data.get('email'), password=request.data.get('password'))
         if user:
             login(request, user)
-            return Response(status=status.HTTP_200_OK)
+            serializer = serializers.UserSerializer(user)
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -69,13 +80,25 @@ class UserLogout(APIView):
     
     
 class AuthCode(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+
     def post(self, request, *args, **kwargs):
         email = request.data.get('email')
         if email:
+            tokens = email.split('@')
+            domain = tokens[len(tokens)-1]
+
+            if ALLOWED_EMAIL_HOSTS.count(domain) != 1:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+
             try:
                 auth = UserAuth.objects.get(email=email)
                 if auth:
                     auth.delete()
+
+                user = User.objects.get(email=email)
+                if user:
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
             except:
                 pass
             
@@ -89,6 +112,8 @@ class AuthCode(APIView):
         
 
 class AuthCheck(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+
     def post(self, request, *args, **kwargs):
         email = request.data.get('email')
         authcode = request.data.get('authcode')
@@ -114,6 +139,8 @@ class UserPostView(APIView):
 
     
 class SubscribeView(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+
     def get(self, request, *args, **kwargs):
         user = request.user
 
@@ -134,20 +161,25 @@ class SubscribeView(APIView):
         subscribe = Subscribe.objects.filter(board=board, user=user)
 
         if len(subscribe) == 0:
-            Subscribe.objects.create(user=user, board=board)
-            return Response(status=status.HTTP_200_OK)
+            subscribes = Subscribe.objects.create(user=user, board=board)
+            serializer = serializers.SubscribeSerializer(subscribes)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_200_OK)
 
+        
+class SubscribeDeleteView(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    
     def delete(self, request, *args, **kwargs):
         user = request.user
 
         if user == None or user.is_anonymous:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        subscribe = Subscribe.objects.get(pk=request.data.get('subscribe'))
+        subscribe = Subscribe.objects.get(pk=kwargs['subscribe_id'])
 
-        if user == subscribe.user:
+        if user == subscribe.user and subscribe.board.id != 1:
             subscribe.delete()
             return Response(status=status.HTTP_200_OK)
         else:
@@ -168,6 +200,18 @@ class FacultyView(APIView):
         serializer = serializers.FacultySerializer(faculty, many=True)
         return Response(serializer.data)
 
+
+class AllFacultyView(APIView):
+    def get(self, request, *args, **kwargs):
+        user = request.user
+
+        if user == None or user.is_anonymous:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        faculty = Faculty.objects.all()
+        serializer = serializers.FacultySerializer(faculty, many=True)
+        return Response(serializer.data)
+
                   
 class DepartmentView(APIView):
     def get(self, request, *args, **kwargs):
@@ -177,7 +221,21 @@ class DepartmentView(APIView):
         return Response(serializer.data)
 
 
+class AllDepartmentView(APIView):
+    def get(self, request, *args, **kwargs):
+        user = request.user
+
+        if user == None or user.is_anonymous:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        department = Department.objects.all()
+        serializer = serializers.DepartmentSerializer(department, many=True)
+        return Response(serializer.data)
+
+
 class PostView(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+
     def get(self, request, *args, **kwargs):
         user = request.user
 
@@ -195,13 +253,32 @@ class PostView(APIView):
         return Response(serializer.data)
 
 
+class APostView(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    
+    def get(self, request, *args, **kwargs):
+        user = request.user
+
+        if user == None or user.is_anonymous:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        board = Board.objects.get(pk=kwargs['board_id'])
+        subscribe = Subscribe.objects.filter(board=board, user=user)
+
+        if len(subscribe) == 0:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        posts = Posts.objects.get(pk=kwargs['post_id'])
+        serializer = serializers.PostsSerializer(posts, many=True)
+        return Response(serializer.data)
+
     def delete(self, request, *args, **kwargs):
         user = request.user
 
         if user == None or user.is_anonymous:
             return Response(status=status.HTTP_404_NOT_FOUND)
         
-        posts = Posts.objects.get(pk=request.data.get('posts'))
+        posts = Posts.objects.get(pk=kwargs['post_id'])
 
         if user == posts.user:
             posts.delete()
@@ -210,7 +287,10 @@ class PostView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+    
 class PostWriteView(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+
     def post(self, request, *args, **kwargs):
         user = request.user
 
@@ -225,24 +305,28 @@ class PostWriteView(APIView):
         
         title = request.data.get('title')
         content = request.data.get('content')
-        Posts.objects.create(user=user, board=board, title=title, content=content)
-        return Response(status=status.HTTP_200_OK)
+        post = Posts.objects.create(user=user, board=board, title=title, content=content)
+
+        serializer = serializers.PostsSerializer(post)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class CommentView(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+
     def get(self, request, *args, **kwargs):
         user = request.user
 
         if user == None or user.is_anonymous:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        posts = Posts.objects.filter(pk=kwargs['post_id'])
+        posts = Posts.objects.get(pk=kwargs['post_id'])
         subscribe = Subscribe.objects.filter(board=posts.board, user=user)
 
         if len(subscribe) == 0:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        comment = Comment.objects.get(post=post)
+        comment = Comment.objects.filter(posts=posts)
         serializer = serializers.CommentSerializer(comment, many=True)
         return Response(serializer.data)
 
@@ -252,25 +336,29 @@ class CommentView(APIView):
         if user == None or user.is_anonymous:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        posts = Posts.objects.filter(pk=kwargs['post_id'])
+        posts = Posts.objects.get(pk=kwargs['post_id'])
         subscribe = Subscribe.objects.filter(board=posts.board, user=user)
 
         if len(subscribe) == 0:
             return Response(status=status.HTTP_404_NOT_FOUND)
         
         comment = request.data.get('comment')
-        Comment.objects.create(user=user, posts=posts, comment=comment)
-        return Response(status=status.HTTP_200_OK)
+        comments = Comment.objects.create(user=user, posts=posts, comment=comment)
+
+        serializer = serializers.CommentSerializer(comments)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class CommentDeleteView(APIView):
+    authentication_classes = [CsrfExemptSessionAuthentication, BasicAuthentication]
+    
     def delete(self, request, *args, **kwargs):
         user = request.user
 
         if user == None or user.is_anonymous:
             return Response(status=status.HTTP_404_NOT_FOUND)
         
-        posts = Posts.objects.filter(pk=kwargs['post_id'])
+        posts = Posts.objects.get(pk=kwargs['post_id'])
         comment = Comment.objects.get(pk=kwargs['comment_id'])
 
         if user == posts.user or user == comment.user:
@@ -278,3 +366,5 @@ class CommentDeleteView(APIView):
             return Response(status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
