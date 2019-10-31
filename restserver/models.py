@@ -55,7 +55,10 @@ class Posts(models.Model):
 
     def __str__(self):
         return self.title
-   
+    
+    class Meta:
+        ordering = ['-timestamp']
+
 
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
